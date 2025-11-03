@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Number Guessing Game — Final</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; display:flex; align-items:center; justify-content:center; min-height:100vh; background:#f3f4f6; margin:0; }
+    .card { background:white; padding:20px; border-radius:12px; box-shadow:0 6px 20px rgba(10,10,10,0.08); width:340px; text-align:center; }
+    h1 { margin:0 0 8px; font-size:20px; }
+    p.lead { margin:0 0 16px; color:#374151; font-size:14px; }
+    input[type="number"] { width:100%; padding:10px; font-size:16px; border-radius:8px; border:1px solid #e5e7eb; box-sizing:border-box; margin-bottom:10px; }
+    button { padding:10px 14px; border-radius:8px; border:none; font-weight:600; cursor:pointer; margin:4px; }
+    button#guessBtn { background:#2563eb; color:white; }
+    button#resetBtn { background:#e5e7eb; }
+    .msg { min-height:36px; margin-top:8px; font-weight:600; }
+    .meta { margin-top:12px; color:#6b7280; font-size:13px; }
+    .scoreboard { margin-top:12px; text-align:left; background:#f9fafb; padding:10px; border-radius:8px; border:1px solid #f3f4f6; font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="card" role="application" aria-label="Number Guessing Game">
+    <h1>Number Guessing Game</h1>
+    <p class="lead">I picked a number between 1 and 100. Try to guess it!</p>
+
+    <label for="guessInput" style="display:none;">Enter guess</label>
+    <input id="guessInput" type="number" min="1" max="100" placeholder="Enter a number 1–100" />
+    <div>
+      <button id="guessBtn">Guess</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div class="msg" id="message" aria-live="polite"></div>
+
+    <div class="scoreboard" id="scoreboard">
+      <div>Attempts: <span id="attempts">0</span></div>
+      <div>Best Score (fewest attempts): <span id="best">—</span></div>
+      <div>Last Guess: <span id="lastGuess">—</span></div>
+    </div>
+
+    <div class="meta">Hints will say "higher" or "lower". Invalid input is handled.</div>
+  </div>
+
+<script>
+(function(){
+  const input = document.getElementById('guessInput');
+  const guessBtn = document.getElementById('guessBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const msg = document.getElementById('message');
+  const attemptsEl = document.getElementById('attempts');
+  const bestEl = document.getElementById('best');
+  const lastGuessEl = document.getElementById('lastGuess');
+
+  let target = null;
+  let attempts = 0;
+  let best = null;
+
+  function newGame() {
+    // pick random 1..100
+    target = Math.floor(Math.random() * 100) + 1;
+    attempts = 0;
+    attemptsEl.textContent = attempts;
+    msg.textContent = 'Game started — make a guess!';
+    lastGuessEl.textContent = '—';
+    input.value = '';
+    input.disabled = false;
+    guessBtn.disabled = false;
+    input.focus();
+  }
+
+  function updateBest() {
+    if (best === null || attempts < best) {
+      best = attempts;
+      bestEl.textContent = best;
+    }
+  }
+
+  function handleGuess() {
+    const val = input.value.trim();
+    if (val === '') {
+      msg.textContent = 'Please enter a number.';
+      return;
+    }
+    // parse integer carefully
+    const n = Number(val);
+    if (!Number.isInteger(n) || n < 1 || n > 100) {
+      msg.textContent = 'Enter a whole number between 1 and 100.';
+      return;
+    }
+    attempts++;
+    attemptsEl.textContent = attempts;
+    lastGuessEl.textContent = n;
+
+    if (n === target) {
+      msg.textContent = `Correct! The number was ${target}. You took ${attempts} attempt${attempts>1?'s':''}.`;
+      updateBest();
+      // lock input to indicate finished
+      input.disabled = true;
+      guessBtn.disabled = true;
+    } else if (n < target) {
+      msg.textContent = 'Too low — try a higher number.';
+    } else {
+      msg.textContent = 'Too high — try a lower number.';
+    }
+  }
+
+  // basic keyboard support: Enter to guess
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleGuess();
+    }
+  });
+
+  guessBtn.addEventListener('click', handleGuess);
+  resetBtn.addEventListener('click', function(){
+    newGame();
+  });
+
+  // start first game
+  newGame();
+})();
+</script>
+</body>
+</html>
