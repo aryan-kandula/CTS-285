@@ -32,9 +32,9 @@ After installation:
    `ORANGE-01-aryankandula`
 2. Run the Python file:
 python app.py
-
 less
 Copy code
+
 3. When you see:
 Running on http://127.0.0.1:5000/
 
@@ -83,4 +83,5 @@ Answer → Charmander
 
 ## Author
 **Aryan Kandula**  
+
 CTS-285 — ORANGE-01 Web Interface Deployment
